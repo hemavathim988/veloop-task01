@@ -1,0 +1,56 @@
+```mermaid
+erDiagram
+  USERS ||--o{ SESSIONS : has
+  USERS ||--o{ TASK_ACTIVITY : performs
+  TASKS ||--o{ TASK_ACTIVITY : instance_of
+  TASK_ACTIVITY ||--o| REWARDS : may_earn
+  USERS ||--o{ REWARDS : receives
+  REWARDS ||--o{ WALLET_TRANSACTIONS : posts_as
+  USERS ||--o{ WALLET_TRANSACTIONS : owns
+  USERS ||--o{ WITHDRAWALS : requests
+  WALLET_TRANSACTIONS ||--o| WITHDRAWALS : funds
+  WALLET_TRANSACTIONS ||--o| WALLET_TRANSACTIONS : reverses
+  USERS ||--o{ REFERRALS : refers
+  USERS ||--o| REFERRALS : was_referred
+  USERS ||--o{ FEATURE_EVENTS : generates
+  SESSIONS ||--o{ FEATURE_EVENTS : contains
+  USERS ||--o{ SUPPORT_TICKETS : opens
+  USERS { string user_id PK
+          timestamp registered_at
+          string acquisition_source
+          string account_status }
+  SESSIONS { string session_id PK
+             string user_id FK
+             timestamp session_start }
+  TASKS { string task_id PK
+          string task_category }
+  TASK_ACTIVITY { string activity_id PK
+                  string user_id FK
+                  string task_id FK
+                  string task_status }
+  REWARDS { string reward_id PK
+            string user_id FK
+            string activity_id FK
+            decimal reward_amount
+            string reward_unit
+            string reward_status }
+  WALLET_TRANSACTIONS { string transaction_id PK
+                        string user_id FK
+                        string reference_id
+                        string related_transaction_id FK
+                        decimal amount }
+  WITHDRAWALS { string withdrawal_id PK
+                string user_id FK
+                decimal requested_amount
+                string withdrawal_status }
+  REFERRALS { string referral_id PK
+              string referrer_user_id FK
+              string referred_user_id FK
+              string referral_status }
+  FEATURE_EVENTS { string event_id PK
+                   string user_id FK
+                   string session_id FK
+                   string event_name }
+  SUPPORT_TICKETS { string ticket_id PK
+                    string user_id FK }
+```

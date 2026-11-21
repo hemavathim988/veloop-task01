@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VELOOP Analytics Dashboard Prototype (Simulated Data)</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--tx:#1c2430;--mu:#5b6676;--ac:#1f3864;--bd:#d9dfe8;--warn:#c00000;--g:#1f3864;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151d;--card:#18202b;--tx:#e6ebf2;--mu:#9aa6b6;--ac:#8fb0ee;--bd:#2a3442;--warn:#ff8a8a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10151d;--card:#18202b;--tx:#e6ebf2;--mu:#9aa6b6;--ac:#8fb0ee;--bd:#2a3442;--warn:#ff8a8a;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{padding:14px 18px;background:#1f3864;color:#fff}header h1{margin:0;font-size:19px}header p{margin:2px 0 0;font-size:12px;opacity:.9}
+.ban{background:var(--warn);color:#fff;padding:8px 18px;font-size:12px;font-weight:600}
+main{padding:14px 18px;max-width:1280px;margin:auto}
+.f{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:14px}.f label{display:flex;flex-direction:column;font-size:12px;color:var(--mu);gap:3px}
+select,input,button{font:inherit;padding:6px 8px;border:1px solid var(--bd);border-radius:6px;background:var(--card);color:var(--tx)}button{cursor:pointer}
+.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}.c .l{font-size:12px;color:var(--mu)}.c .v{font-size:24px;font-weight:700;color:var(--ac)}.c .s{font-size:11px;color:var(--mu)}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}
+.p{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}.p h2{margin:0 0 4px;font-size:14px}.p small{display:block;color:var(--mu);font-size:11px;margin-bottom:6px}
+.p canvas{width:100%!important;height:240px!important}
+.d{margin-top:14px;font-size:12px;color:var(--mu)}.d b{color:var(--tx)}
+</style></head><body>
+<header><h1>VELOOP Analytics Dashboard Prototype</h1><p>Hemavathi M · Intern ID VLRINT20263720 · Task 01 · Prototype built on simulated data to test KPI definitions</p></header>
+<div class="ban">SIMULATED DATA — CREATED FOR ANALYTICAL TESTING. Not actual VELOOP data or performance. Users, sessions, events and tasks come from the supplied simulated files; reward figures come from analyst-generated stand-in data.</div>
+<main>
+<div class="f">
+<label>From<input type="date" id="from"></label><label>To<input type="date" id="to"></label>
+<label>Task category<select id="cat"></select></label><button id="reset">Reset filters</button>
+</div>
+<div class="k" id="kpis"></div>
+<div class="g">
+<div class="p"><h2>Daily active users and new registrations</h2><small>DAU = unique users with a qualifying event per day (KPI-U02). Registrations: KPI-U01.</small><canvas id="c1"></canvas></div>
+<div class="p"><h2>Task completion rate by week</h2><small>Completed ÷ all attempts (KPI-E06); respects the category filter.</small><canvas id="c2"></canvas></div>
+<div class="p"><h2>Task outcomes by category</h2><small>Completed, abandoned, failed, pending attempts (KPI-E05–E07).</small><canvas id="c3"></canvas></div>
+<div class="p"><h2>Why tasks fail or are abandoned</h2><small>Failure-reason mix (simulated; reasons are near-uniform by construction).</small><canvas id="c4"></canvas></div>
+<div class="p"><h2>Reward distribution by unit and status</h2><small>Credited amount per unit (never summed across units; KPI-R02). Stand-in data, not filtered by category.</small><canvas id="c5"></canvas></div>
+<div class="p"><h2>Feature usage</h2><small>Events per feature after cleaning (KPI-E02 input).</small><canvas id="c6"></canvas></div>
+</div>
+<div class="d"><b>Definitions.</b> Completion rate = Completed ÷ all attempts. Abandonment = Abandoned ÷ attempts. Failure = Failed ÷ attempts. Pending share = Pending ÷ attempts. Reversal rate = Reversed ÷ (Credited + Reversed + Corrected). Average DAU = mean of daily unique active users in the range. <b>Limitations.</b> Differences between categories in this simulated data are small and should not be read as business insight; the prototype exists to prove the KPI formulas and the data model work. Rewards are not linked to task category in the filter. Replace with governed production data when available.</div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const D=__DATA__;const $=i=>document.getElementById(i);
+const st={from:0,to:D.days.length-1,cat:-1};
+//PURE-START
+const inR=i=>i>=st.from&&i<=st.to;
+function agg(){const a={tasks:[0,0,0,0],byCat:D.cats.map(()=>[0,0,0,0]),week:{},reasons:D.reasons.map(()=>0),rw:D.units.map(()=>[0,0,0,0]),rwN:[0,0,0,0],feat:D.feats.map(()=>0)};
+for(const [d,c,s,n] of D.tk){if(!inR(d))continue;a.byCat[c][s]+=n;if(st.cat>=0&&c!==st.cat)continue;a.tasks[s]+=n;const w=Math.floor(d/7);(a.week[w]=a.week[w]||[0,0])[1]+=n;if(s===0)a.week[w][0]+=n}
+for(const [d,c,r,n] of D.fg){if(!inR(d)||(st.cat>=0&&c!==st.cat))continue;a.reasons[r]+=n}
+for(const [d,u,s,n,m] of D.rw){if(!inR(d))continue;a.rw[u][s]+=m;a.rwN[s]+=n}
+for(const [d,f,n] of D.fe){if(inR(d))a.feat[f]+=n}
+let ds=0,k=0,nu=0,se=0;for(let i=st.from;i<=st.to;i++){ds+=D.dau[i];nu+=D.newu[i];se+=D.sess[i];k++}
+a.avgDau=k?ds/k:0;a.newU=nu;a.sess=se;return a}
+function kpis(a){const t=a.tasks.reduce((x,y)=>x+y,0),p=x=>t?(100*x/t).toFixed(1)+'%':'–';const [cr,pe,rv,co]=a.rwN;const rr=cr+rv+co;
+return [['Average DAU',a.avgDau.toFixed(1),'KPI-U02'],['New registrations',a.newU.toLocaleString(),'KPI-U01'],['Sessions',a.sess.toLocaleString(),'KPI-E01 input'],['Task attempts',t.toLocaleString(),'KPI-E04'],
+['Completion rate',p(a.tasks[0]),'KPI-E06'],['Abandonment rate',p(a.tasks[1]),'KPI-E07'],['Failure rate',p(a.tasks[2]),'task_failed ÷ attempts'],['Pending share',p(a.tasks[3]),'attempts not yet resolved'],
+['Rewards credited',cr.toLocaleString(),'KPI-R01 (stand-in)'],['Reward reversal rate',rr?(100*rv/rr).toFixed(1)+'%':'–','KPI-R04 (stand-in)']]}
+//PURE-END
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const pal=['#1f3864','#2e75b6','#9dc3e6','#c55a11','#7f7f7f','#548235','#bf9000','#7030a0'];
+const CH={};
+function mk(id,type,opt){const c=Chart.getDefaults?Chart:Chart;return new Chart($(id),{type,data:{labels:[],datasets:[]},options:Object.assign({responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:css('--tx'),boxWidth:12}}},scales:{x:{ticks:{color:css('--mu'),maxTicksLimit:10},grid:{color:css('--bd')}},y:{ticks:{color:css('--mu')},grid:{color:css('--bd')},beginAtZero:true}}},opt||{})})}
+function set(ch,labels,ds){ch.data.labels=labels;ch.data.datasets=ds;ch.update()}
+function render(){const a=agg();
+$('kpis').innerHTML=kpis(a).map(([l,v,s])=>`<div class="c" title="${s}"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join('');
+const idx=[];for(let i=st.from;i<=st.to;i++)idx.push(i);
+set(CH.c1,idx.map(i=>D.days[i].slice(5)),[{label:'Daily active users',data:idx.map(i=>D.dau[i]),borderColor:pal[0],backgroundColor:pal[0],pointRadius:0,borderWidth:2,tension:.2},{label:'New registrations',data:idx.map(i=>D.newu[i]),borderColor:pal[3],backgroundColor:pal[3],pointRadius:0,borderWidth:2,tension:.2}]);
+const ws=Object.keys(a.week).map(Number).sort((x,y)=>x-y);
+set(CH.c2,ws.map(w=>D.days[Math.min(w*7,D.days.length-1)].slice(5)),[{label:'Completion rate %',data:ws.map(w=>a.week[w][1]?+(100*a.week[w][0]/a.week[w][1]).toFixed(1):null),borderColor:pal[1],backgroundColor:pal[1],pointRadius:2,borderWidth:2}]);
+set(CH.c3,D.cats,D.stat.map((s,j)=>({label:s,data:a.byCat.map(r=>r[j]),backgroundColor:[pal[5],pal[6],pal[3],pal[4]][j]})));
+const ro=D.reasons.map((r,i)=>[r,a.reasons[i]]).sort((x,y)=>y[1]-x[1]);set(CH.c4,ro.map(x=>x[0]),[{label:'Failed or abandoned attempts',data:ro.map(x=>x[1]),backgroundColor:pal[3]}]);
+set(CH.c5,D.units,D.rst.map((s,j)=>({label:s,data:a.rw.map(r=>r[j]),backgroundColor:[pal[0],pal[2],pal[3],pal[6]][j]})));
+const fo=D.feats.map((f,i)=>[f,a.feat[i]]).sort((x,y)=>y[1]-x[1]);set(CH.c6,fo.map(x=>x[0]),[{label:'Events',data:fo.map(x=>x[1]),backgroundColor:pal[1]}])}
+function init(){const dates=D.days;$('from').min=$('to').min=dates[0];$('from').max=$('to').max=dates[dates.length-1];$('from').value=dates[0];$('to').value=dates[dates.length-1];
+$('cat').innerHTML='<option value="-1">All categories</option>'+D.cats.map((c,i)=>`<option value="${i}">${c}</option>`).join('');
+CH.c1=mk('c1','line');CH.c2=mk('c2','line');CH.c3=mk('c3','bar',{scales:{x:{stacked:true,ticks:{color:css('--mu')},grid:{color:css('--bd')}},y:{stacked:true,ticks:{color:css('--mu')},grid:{color:css('--bd')}}}});
+CH.c4=mk('c4','bar',{indexAxis:'y'});CH.c5=mk('c5','bar',{scales:{x:{stacked:true,ticks:{color:css('--mu')},grid:{color:css('--bd')}},y:{stacked:true,ticks:{color:css('--mu')},grid:{color:css('--bd')}}}});CH.c6=mk('c6','bar',{indexAxis:'y'});
+const up=()=>{const f=D.days.indexOf($('from').value),t=D.days.indexOf($('to').value);st.from=f<0?0:f;st.to=t<0?D.days.length-1:t;if(st.from>st.to)[st.from,st.to]=[st.to,st.from];st.cat=+$('cat').value;render()};
+['from','to','cat'].forEach(i=>$(i).addEventListener('change',up));
+$('reset').addEventListener('click',()=>{$('from').value=dates[0];$('to').value=dates[dates.length-1];$('cat').value=-1;up()});render()}
+if(typeof Chart!=='undefined')init();else document.body.insertAdjacentHTML('afterbegin','<div class="ban">Charts could not load (offline?). KPI cards still work after reload with internet.</div>');
+</script></body></html>

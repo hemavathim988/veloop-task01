@@ -1,0 +1,13 @@
+```mermaid
+flowchart LR
+  A[VELOOP app & backend] --> B[Application events]
+  B --> C[Raw storage]
+  C --> D[Validation + quarantine]
+  D --> E[Transformation]
+  E --> F[Analytics layer]
+  F --> G[BI dashboards]
+  G --> H[Business reporting]
+  D -.rejects.-> Q[(Quarantine table)]
+  M[Monitoring: freshness, row counts, rejects] -.-> D
+  M -.-> F
+```
