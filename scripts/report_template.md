@@ -4,7 +4,7 @@
 > **SIMULATED DATA — CREATED FOR ANALYTICAL TESTING.** All data used is fictional. No figure in this report is an actual VELOOP user count, earning, withdrawal, revenue, retention or performance number. Product items are **Proposed** or **To Be Verified** unless stated.
 
 **Analyst:** Hemavathi M · **Intern ID:** VLRINT20263720 · **Version:** v2, revised 20 Nov 2026 (first submission 19 Nov 2026)
-**Repository:** github.com/hemavathim988/veloop-task01 · **Dashboard prototype:** claude.ai/artifact/JQFVQcXA96FwCZ6f3MXb7D
+**Repository:** github.com/hemavathim988/veloop-task01 · **Dashboard prototype:** hemavathim988.github.io/veloop-task01/dashboard/ · **Report (web):** hemavathim988.github.io/veloop-task01/report/
 
 **What changed in v2** (response to review): one facts source now feeds every count in the report, workbooks and presentation; real cleaning evidence with before/after figures and a cleaned dataset; a clear split between supplied and analyst-generated data; a working dashboard prototype; prioritised business recommendations; a more visual presentation.
 
@@ -25,7 +25,7 @@
 
 **Top recommendations** (details in section 9): stable IDs with an idempotency key; validation at ingestion; one generic task-event model; daily rewards-to-wallet reconciliation; timestamped withdrawal lifecycle; one referral definition; remove direct identifiers; build dashboards in three phases.
 
-**Open items.** Product facts are unverified (@@n_assume@@ assumptions), support KPIs have no data, and the Rewards, Wallet, Withdrawals and Referrals tables were not supplied.
+**Open items.** Product facts are mostly unverified (@@n_assume@@ assumptions). I checked the public site, velooprewards.in: its About page confirms only that VELOOP is an online rewards and engagement platform using internal units named VEs, XP, Gems, Tokens, Spins and badges, and that withdrawal concerns are handled by support. How events, IDs and withdrawals work in the product is not confirmed. Support KPIs have no data, and the Rewards, Wallet, Withdrawals and Referrals tables were not supplied.
 
 ---
 
@@ -115,7 +115,7 @@ Keys: each entity has its own primary key (`user_id`, `session_id`, `task_id`, `
 
 ## 6. Dashboard prototype (functional)
 
-A working dashboard built on the supplied simulated data (rewards use the stand-in): **claude.ai/artifact/JQFVQcXA96FwCZ6f3MXb7D**; source in `dashboard/index.html`.
+A working dashboard built on the supplied simulated data (rewards use the stand-in): **hemavathim988.github.io/veloop-task01/dashboard/**; source in `dashboard/index.html`.
 
 - **Filters:** date range and task category.
 - **KPI cards:** average DAU, new registrations, sessions, task attempts, completion, abandonment, failure and pending rates, rewards credited, reversal rate.
@@ -200,7 +200,7 @@ Evidence labels: **Test** = observed in the supplied simulated files or my tests
 | Documentation | 4 | report, workbooks, scripts |
 | Reporting | 1 | no production data |
 
-**Assumptions:** @@n_assume@@ open (workbook `Assumptions`), for example whether backend emits task completion events, whether `transaction_id` exists, referral activation rule, reward units, withdrawal methods and timezone. **Backlog:** @@n_backlog@@ items in `Backlog`; Critical: stable user ID, unique transaction ID, withdrawal IDs with timestamped transitions, reward record with amount, unit, status and source link, and `event_id` idempotency key.
+**Assumptions:** @@n_assume@@ open (workbook `Assumptions`; sources in `Source_Register`, including the official About page, which names the reward units but gives no engineering detail), for example whether backend emits task completion events, whether `transaction_id` exists, referral activation rule, reward units, withdrawal methods and timezone. **Backlog:** @@n_backlog@@ items in `Backlog`; Critical: stable user ID, unique transaction ID, withdrawal IDs with timestamped transitions, reward record with amount, unit, status and source link, and `event_id` idempotency key.
 
 ---
 

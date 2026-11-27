@@ -17,7 +17,7 @@
  },
  "n_assume": 15,
  "n_backlog": 16,
- "n_sources": 7,
+ "n_sources": 11,
  "test": {
   "Supplied data": 17,
   "Partly supplied": 4,

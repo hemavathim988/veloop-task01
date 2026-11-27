@@ -6,6 +6,13 @@
 
 **Supplied vs generated.** Users, sessions, events, tasks, milestones and the two messy sheets are **supplied** simulated files. Rewards, Wallet, Withdrawals and Referrals were not in the shared Drive folder, so they are **analyst-generated stand-ins** (`scripts/generate_supplementary.py`, seed 20261118). Results on stand-ins are formula tests only. Replace them with real data; never mix.
 
+## Live links (GitHub Pages)
+- **Live site (start here):** https://hemavathim988.github.io/veloop-task01/
+- Dashboard prototype: https://hemavathim988.github.io/veloop-task01/dashboard/
+- Report (web version): https://hemavathim988.github.io/veloop-task01/report/
+
+(Enable once: repository Settings > Pages > Deploy from branch `main`, folder `/ (root)`.)
+
 ## Contents
 | Path | What it is |
 |---|---|
@@ -14,6 +21,7 @@
 | `VELOOP_Task01_Blueprint.xlsx` | Coverage matrix, gaps, event plan, data dictionary, KPI catalogue and tests, assumptions, backlog, report facts |
 | `VELOOP_Task01_Data_Profiling_and_Quality.xlsx` | Profiling, relationship tests, quality audit, cleaning log, before/after, validation, provenance, stand-in data and methodology |
 | `VELOOP_Task01_Cleaned_Datasets.xlsx`, `data/cleaned/*.csv` | Cleaned (analytics-safe) users and events plus quarantine files |
+| `report/index.html` | Self-contained web version of the report |
 | `dashboard/index.html` | Working dashboard prototype (opens in a browser; needs internet for the chart library) |
 | `docs/diagrams/` | ER diagram, pipeline, 7 wireframes, charts |
 | `scripts/` | All code (below) |
@@ -22,4 +30,4 @@
 Put the two supplied workbooks at the paths in `scripts/profile_data.py`, then run in order: `clean_data.py`, `generate_supplementary.py`, `analyze_supplementary.py`, `facts.py`, `dash_data.py`, `make_charts.py`, `make_diagrams.py`, `build_workbooks.py`, `build_report.py`. Every count in the report, workbooks and deck comes from `scripts/facts.py`.
 
 ## Known limits
-Product facts are unverified (all items Proposed / To Be Verified, 15 assumptions). Support KPIs have no data. Readiness scores are analyst judgment. The dashboard was tested in a headless browser with the chart library mocked; chart drawing needs internet.
+Product facts are mostly unverified (15 assumptions); the official About page confirms only reward unit names and that withdrawals exist. Support KPIs have no data. Readiness scores are analyst judgment. The dashboard was tested in a headless browser with the chart library mocked; chart drawing needs internet.

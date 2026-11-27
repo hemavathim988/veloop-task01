@@ -6,7 +6,11 @@ SOURCES=[
 ("S003","Behaviour dataset (sessions, events, daily activity, tasks, milestones) supplied","VELOOP_Simulated_User_Behavior_1000.xlsx","Simulated","2026-11-19","Confirmed (file exists; data is fictional)","README names it 'Task 02'; same user_ids as Task 01 but conflicting attributes"),
 ("S004","Rewards, Wallet, Withdrawals, Referrals datasets were not supplied","Not in either uploaded workbook","Simulated","2026-11-19","Confirmed (absence)","Analyst generated labelled replacements (scripts/generate_supplementary.py); real sheets from the brief's Drive folder should replace them"),
 ("S007","Analyst-generated simulated Rewards, Wallet_Transactions, Withdrawals, Referrals","scripts/generate_supplementary.py (seed 20261118)","Simulated","2026-11-19","Confirmed (generated; fictional)","Distributions are assumptions, not VELOOP behaviour; methodology in profiling workbook"),
-("S005","Public/official VELOOP product documentation","Not reviewed - not available to the analyst in this environment","Official","2026-11-19","To Be Verified","All feature statuses therefore stay Proposed / To Be Verified"),
+("S005","Official product/engineering documentation (event emission, IDs, schemas, withdrawal rules)","Not available to the analyst","Official","2026-11-21","To Be Verified","Only the public About Us page was reviewed (S008); engineering facts remain unverified"),
+("S008","VELOOP Rewards describes itself as an online-operated rewards and engagement platform based in India that uses internal digital units such as VEs, XP, Gems, Tokens, Spins and badges","https://www.velooprewards.in/about-us","Official","2026-11-21","Confirmed (as stated by the official site; implementation and which units are live not verified)","Public marketing text, not product documentation"),
+("S009","The official About Us page lists withdrawal concerns among the topics handled by support channels","https://www.velooprewards.in/about-us","Official","2026-11-21","Confirmed (that withdrawals are referenced); methods, states and timings To Be Verified","Does not describe the withdrawal lifecycle"),
+("S010","The public homepage shows user-count and payout-total figures","https://www.velooprewards.in/","Official","2026-11-21","To Be Verified - NOT USED","Marketing figures cannot be verified and sit awkwardly with the brief's statement that production volume is low; no figure from the site is used anywhere in this work"),
+("S011","Public GitHub repositories named VELOOP (landing pages, giveaway demos)","GitHub search","Internal","2026-11-21","Not used","Other people's demo projects, not official documentation; their features are not evidence of VELOOP behaviour"),
 ("S006","Current backend event emission, IDs, session handling, idempotency","Not reviewed","Internal","2026-11-19","To Be Verified","Needs engineering confirmation (see Assumption Register)"),
 ]
 # ---------- Coverage matrix: area,feature,user action,system action,business outcome,data required,proposed event,source,business question,status,priority
@@ -265,7 +269,7 @@ ASSUME=[
 ("A002","Is a stable user_id issued at registration and never reused?","Cross-entity joins","Not verified","Critical","Engineering","To Be Verified"),
 ("A003","Is a session identifier generated in production?","Session analytics","Not verified","High","Engineering","To Be Verified"),
 ("A004","Do wallet entries carry a unique transaction_id?","Ledger deduplication","Not verified","Critical","Engineering","To Be Verified"),
-("A005","Which reward units (VE, XP, Gems, Tokens) are live?","Per-unit reporting","Brief lists them as areas only","High","Product","To Be Verified"),
+("A005","Which reward units (VE, XP, Gems, Tokens, Spins) are live and how do they relate?","Per-unit reporting","Official About Us page names VEs, XP, Gems, Tokens, Spins and badges as internal units (S008); live status not stated","High","Product","Partly confirmed (names only); live status To Be Verified"),
 ("A006","Which withdrawal methods exist?","Method KPIs","Not verified","High","Product","To Be Verified"),
 ("A007","What defines 'activated' for a referred user?","Referral conversion","Not defined in brief","High","Product","To Be Verified"),
 ("A008","What timezone are timestamps stored in?","Daily metric boundaries","Not verified","High","Engineering","To Be Verified"),
